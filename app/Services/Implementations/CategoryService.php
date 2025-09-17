@@ -4,10 +4,9 @@ namespace App\Services\Implementations;
 
 use App\Helpers\Helper;
 use App\Models\Category;
-use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Services\Interfaces\CategoryServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -16,14 +15,10 @@ class CategoryService implements CategoryServiceInterface
 
     protected $categoryRepository;
 
-    public function __construct(CategoryRepositoryInterface $categoryRepository)
-    {
-        $this->categoryRepository = $categoryRepository;
-    }
     public function getAllCategories(): Collection
     {
         try {
-            $categories = $this->categoryRepository->getAll();
+            $categories = Category::get();
 
             if ($categories->isEmpty()) {
                 throw new NotFoundHttpException('No categories found');
@@ -40,11 +35,7 @@ class CategoryService implements CategoryServiceInterface
     public function getSingleCategory($id): Category
     {
         try {
-            $category = $this->categoryRepository->find($id);
-
-            if (!$category) {
-                throw new ModelNotFoundException();
-            }
+            $category = Category::findOrFail($id);
 
             return $category;
         } catch (\Throwable $e) {
@@ -59,9 +50,12 @@ class CategoryService implements CategoryServiceInterface
         DB::beginTransaction();
 
         try {
-            $request['order'] = Category::max('order') + 1;
+            $maxOrder = Category::max('order') + 1;
 
-            $category = $this->categoryRepository->create($request);
+            $category = Category::create([
+                'name' => $request['name'],
+                'order' => $maxOrder
+            ]);
 
             DB::commit();
 
@@ -80,13 +74,11 @@ class CategoryService implements CategoryServiceInterface
         DB::beginTransaction();
 
         try {
-            $category = $this->categoryRepository->find($id);
+            $category = Category::findOrFail($id);
 
-            if (!$category) {
-                throw new ModelNotFoundException();
-            }
-
-            $this->categoryRepository->update($category, $request);
+            $category->update([
+                'name' => $request['name']
+            ]);
 
             DB::commit();
 
@@ -100,18 +92,99 @@ class CategoryService implements CategoryServiceInterface
         }
     }
 
-    public function destroy($id): Category
+    public function softDelete($id): Category
     {
         DB::beginTransaction();
 
         try {
-            $category = $this->categoryRepository->find($id);
+            $category = Category::findOrFail($id);
 
-            if (!$category) {
-                throw new ModelNotFoundException();
+            $category->delete();
+
+            DB::commit();
+
+            return $category;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Helper::logException($e);
+
+            throw $e;
+        }
+    }
+
+    public function forceDelete($id): Category
+    {
+        DB::beginTransaction();
+
+        try {
+            $category = Category::findOrFail($id);
+
+            $category->forceDelete();
+
+            DB::commit();
+
+            return $category;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Helper::logException($e);
+
+            throw $e;
+        }
+    }
+
+    public function orderUp($id): Category
+    {
+        DB::beginTransaction();
+
+        try {
+            $category = Category::findOrFail($id);
+
+            $upper = Category::where('order', $category->order - 1)->first();
+
+            if (!$upper) {
+                throw new \Exception('Category is already at the top position');
             }
 
-            $this->categoryRepository->delete($category);
+            $currentOrder = $category->order;
+            $upperOrder = $upper->order;
+
+            $category->update(['order' => $upperOrder]);
+
+            $upper->update(['order' => $currentOrder]);
+
+            DB::commit();
+
+            return $category;
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Helper::logException($e);
+
+            throw $e;
+        }
+    }
+
+    public function orderDown($id): Category|JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            $category = Category::findOrFail($id);
+
+            $lower = Category::where('order', $category->order + 1)->first();
+
+            if (!$lower) {
+                throw new \Exception('Category is already at the bottom position');
+            }
+
+            $currentOrder = $category->order;
+            $lowerOrder = $lower->order;
+
+            $category->update(['order' => $lowerOrder]);
+
+            $lower->update(['order' => $currentOrder]);
 
             DB::commit();
 

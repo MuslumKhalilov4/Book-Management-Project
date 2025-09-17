@@ -4,6 +4,7 @@ namespace App\Services\Interfaces;
 
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 
 interface CategoryServiceInterface
 {
@@ -15,5 +16,11 @@ interface CategoryServiceInterface
 
     public function update($id, $request): Category;
 
-    public function destroy($id): Category;
+    public function softDelete($id): Category;
+
+    public function forceDelete($id): Category;
+
+    public function orderUp($id): Category;
+    
+    public function orderDown($id): Category|JsonResponse;
 }

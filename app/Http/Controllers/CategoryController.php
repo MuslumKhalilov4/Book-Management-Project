@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Helper;
 use App\Http\Requests\Category\StoreCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Services\Interfaces\CategoryServiceInterface;
@@ -49,10 +49,39 @@ class CategoryController extends Controller
     }
 
 
-    public function destroy($id): JsonResponse
+    public function softDelete($id): JsonResponse
     {
-        $category = $this->categoryService->destroy($id);
+        $category = $this->categoryService->softDelete($id);
 
         return Helper::successResponse('Category deleted successfully!', CategoryResource::make($category), 200);
+    }
+
+    public function forceDelete($id): JsonResponse
+    {
+        $category = $this->categoryService->forceDelete($id);
+
+        return Helper::successResponse('Category permanently deleted successfully!', CategoryResource::make($category), 200);
+    }
+
+    public function orderUp($id): JsonResponse
+    {
+        try {
+            $category = $this->categoryService->orderUp($id);
+
+            return Helper::successResponse('Category successfully moved up!', CategoryResource::make($category), 200);
+        } catch (\Exception $e) {
+            return Helper::failResponse($e->getMessage(), 400);
+        }
+    }
+
+    public function orderDown($id): JsonResponse
+    {
+        try {
+            $category = $this->categoryService->orderDown($id);
+
+            return Helper::successResponse('Category successfully moved down!', CategoryResource::make($category), 200);
+        } catch (\Exception $e) {
+            return Helper::failResponse($e->getMessage(), 400);
+        }
     }
 }

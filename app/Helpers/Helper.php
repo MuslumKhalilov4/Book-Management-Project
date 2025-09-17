@@ -25,4 +25,12 @@ class Helper{
             'trace' => $e->getTraceAsString()   
         ]);
     }
+    
+    public static function failResponse($message, $code): JsonResponse
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message
+        ], $code);
+    }
 }
