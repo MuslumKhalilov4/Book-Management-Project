@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
-class Category extends Model
+class Author extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
-    protected $fillable = ['name', 'order'];
-    
-    protected $translatable = ['name'];  
+    protected $fillable = ['full_name', 'about', 'image', 'order'];
+
+    protected $translatable = ['full_name', 'about'];
 }

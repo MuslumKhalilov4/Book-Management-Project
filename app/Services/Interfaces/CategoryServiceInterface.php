@@ -22,5 +22,5 @@ interface CategoryServiceInterface
 
     public function orderUp($id): Category;
     
-    public function orderDown($id): Category|JsonResponse;
+    public function orderDown($id): Category;
 }

@@ -166,7 +166,7 @@ class CategoryService implements CategoryServiceInterface
         }
     }
 
-    public function orderDown($id): Category|JsonResponse
+    public function orderDown($id): Category
     {
         DB::beginTransaction();
 

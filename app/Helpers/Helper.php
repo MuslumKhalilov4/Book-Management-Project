@@ -3,16 +3,28 @@
 namespace App\Helpers;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
-class Helper{
+class Helper
+{
 
-    public static function successResponse($message, $resource, $code): JsonResponse
+    public static function successResponse(string $message, $resource, $code): JsonResponse
     {
         return response()->json([
             'success' => true,
             'message' => $message,
             'data' => $resource
+        ], $code);
+    }
+
+    public static function failResponse(string $message, $code): JsonResponse
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message
         ], $code);
     }
 
@@ -22,15 +34,30 @@ class Helper{
             'message' => $e->getMessage(),
             'file' => $e->getFile(),
             'line' => $e->getLine(),
-            'trace' => $e->getTraceAsString()   
+            'trace' => $e->getTraceAsString()
         ]);
     }
-    
-    public static function failResponse($message, $code): JsonResponse
+
+
+    public static function uploadImage(UploadedFile $image, string $folder): string
     {
-        return response()->json([
-            'success' => false,
-            'message' => $message
-        ], $code);
+        $extension = $image->extension();
+
+        $image_name = Str::random(20) . '.' . $extension;
+
+        $uploaded = $image->storeAs('public/uploads/' . $folder, $image_name);
+
+        $image_path = Storage::url($uploaded);
+
+        return $image_path;
+    }
+
+    public static function deleteFile($file_path): void
+    {
+        $storage_path = str_replace('/storage/', 'public/', $file_path);
+
+        if (Storage::exists($storage_path)) {
+            Storage::delete($storage_path);
+        }
     }
 }
