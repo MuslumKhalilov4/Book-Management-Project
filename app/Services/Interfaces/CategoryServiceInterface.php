@@ -19,8 +19,4 @@ interface CategoryServiceInterface
     public function softDelete($id): Category;
 
     public function forceDelete($id): Category;
-
-    public function orderUp($id): Category;
-    
-    public function orderDown($id): Category;
 }

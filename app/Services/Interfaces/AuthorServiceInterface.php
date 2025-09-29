@@ -19,8 +19,4 @@ interface AuthorServiceInterface
     public function softDelete($id): Author;
 
     public function forceDelete($id): Author;
-
-    public function orderUp($id): Author;
-
-    public function orderDown($id): Author;
 }

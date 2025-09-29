@@ -8,16 +8,19 @@ use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Services\Interfaces\CategoryServiceInterface;
+use App\Services\Interfaces\SortOrderServiceInterface;
 use Illuminate\Http\JsonResponse;
 
 
 class CategoryController extends Controller
 {
     protected $categoryService;
+    protected $sortOrderService;
 
-    public function __construct(CategoryServiceInterface $categoryService)
+    public function __construct(CategoryServiceInterface $categoryService, SortOrderServiceInterface $sortOrderService)
     {
         $this->categoryService = $categoryService;
+        $this->sortOrderService = $sortOrderService;
     }
 
     public function index(): JsonResponse
@@ -66,7 +69,7 @@ class CategoryController extends Controller
     public function orderUp($id): JsonResponse
     {
         try {
-            $category = $this->categoryService->orderUp($id);
+            $category = $this->sortOrderService->orderUp($id, new Category());
 
             return Helper::successResponse('Category successfully moved up!', CategoryResource::make($category), 200);
         } catch (\Exception $e) {
@@ -77,7 +80,7 @@ class CategoryController extends Controller
     public function orderDown($id): JsonResponse
     {
         try {
-            $category = $this->categoryService->orderDown($id);
+            $category = $this->sortOrderService->orderDown($id, new Category());
 
             return Helper::successResponse('Category successfully moved down!', CategoryResource::make($category), 200);
         } catch (\Exception $e) {

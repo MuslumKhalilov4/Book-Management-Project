@@ -6,16 +6,20 @@ use App\Helpers\Helper;
 use App\Http\Requests\Author\StoreAuthorRequest;
 use App\Http\Requests\Author\UpdateAuthorRequest;
 use App\Http\Resources\AuthorResource;
+use App\Models\Author;
 use App\Services\Interfaces\AuthorServiceInterface;
+use App\Services\Interfaces\SortOrderServiceInterface;
 use Illuminate\Http\JsonResponse;
 
 class AuthorController extends Controller
 {
     protected $authorService;
+    protected $sortOrderService;
 
-    public function __construct(AuthorServiceInterface $authorService)
+    public function __construct(AuthorServiceInterface $authorService, SortOrderServiceInterface $sortOrderService)
     {
         $this->authorService = $authorService;
+        $this->sortOrderService = $sortOrderService;
     }
 
     public function index(): JsonResponse
@@ -64,7 +68,7 @@ class AuthorController extends Controller
     public function orderUp($id): JsonResponse
     {
         try {
-            $author = $this->authorService->orderUp($id);
+            $author = $this->sortOrderService->orderUp($id, new Author());
 
             return Helper::successResponse('Author successfully moved up!', AuthorResource::make($author), 200);
         } catch (\Exception $e) {
@@ -75,7 +79,7 @@ class AuthorController extends Controller
     public function orderDown($id): JsonResponse
     {
         try {
-            $author = $this->authorService->orderDown($id);
+            $author = $this->sortOrderService->orderDown($id, new Author());
 
             return Helper::successResponse('Author successfully moved down!', AuthorResource::make($author), 200);
         } catch (\Exception $e) {

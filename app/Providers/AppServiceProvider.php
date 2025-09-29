@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use App\Repositories\Implementations\CategoryRepository;
-use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Services\Implementations\AuthorService;
 use App\Services\Implementations\CategoryService;
+use App\Services\Implementations\SortOrderService;
 use App\Services\Interfaces\AuthorServiceInterface;
 use App\Services\Interfaces\CategoryServiceInterface;
+use App\Services\Interfaces\SortOrderServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(CategoryServiceInterface::class, CategoryService::class);
         $this->app->bind(AuthorServiceInterface::class, AuthorService::class);
+        $this->app->bind(SortOrderServiceInterface::class, SortOrderService::class);
     }
 
     /**
