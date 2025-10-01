@@ -2,7 +2,6 @@
 
 namespace App\Services\Interfaces;
 
-use App\Http\Requests\Author\StoreAuthorRequest;
 use App\Models\Author;
 use Illuminate\Database\Eloquent\Collection;
 
