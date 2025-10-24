@@ -4,7 +4,6 @@ namespace App\Services\Implementations;
 
 use App\Helpers\Helper;
 use App\Models\Book;
-use App\Services\Interfaces\AuthorServiceInterface;
 use App\Services\Interfaces\BookServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +14,7 @@ class BookService implements BookServiceInterface
     public function getAllBooks(): Collection
     {
         try {
-            $books = Book::get();
+            $books = Book::with('authors')->get();
 
             if ($books->isEmpty()) {
                 throw new NotFoundHttpException('No books found');
@@ -60,11 +59,12 @@ class BookService implements BookServiceInterface
                 'about' => $request['about'],
                 'image' => $image_path,
                 'category_id' => $request['category_id'],
-                'order' => $maxOrder
+                'order' => $maxOrder,
+                'rating' => 0
             ]);
 
-            foreach ($request['author_ids'] as $author_id) {
-                $book->authors()->attach($author_id);
+            if (isset($request['author_ids'])) {
+                $book->authors()->attach($request['author_ids']);
             }
 
             DB::commit();
@@ -102,8 +102,8 @@ class BookService implements BookServiceInterface
 
             $book->update($update_datas);
 
-            foreach ($request['author_ids'] as $author_id) {
-                $book->authors()->sync($author_id);
+            if (isset($request['author_ids'])) {
+                $book->authors()->sync($request['author_ids']);
             }
 
             DB::commit();
@@ -146,7 +146,7 @@ class BookService implements BookServiceInterface
         try {
             $book = Book::findOrFail($id);
 
-            if($book->image){
+            if ($book->image) {
                 Helper::deleteFile($book->image);
             }
 
@@ -162,5 +162,5 @@ class BookService implements BookServiceInterface
 
             throw $e;
         }
-    } 
+    }
 }

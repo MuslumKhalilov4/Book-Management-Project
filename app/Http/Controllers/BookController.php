@@ -24,53 +24,53 @@ class BookController extends Controller
 
     public function index(): JsonResponse
     {
-        $authors = $this->bookService->getAllBooks();
+        $books = $this->bookService->getAllBooks();
 
-        return Helper::successResponse('Books retrieved successfully!', BookResource::collection($authors), 200);
+        return Helper::successResponse('Books retrieved successfully!', BookResource::collection($books), 200);
     }
 
     public function show($id): JsonResponse
     {
-        $author = $this->bookService->getSingleBook($id);
+        $book = $this->bookService->getSingleBook($id);
 
-        return Helper::successResponse('Book retrieved successfully!', BookResource::make($author), 200);
+        return Helper::successResponse('Book retrieved successfully!', BookResource::make($book), 200);
     }
 
     public function store(StoreBookRequest $request): JsonResponse
     {
-        $author = $this->bookService->store($request->validated());
+        $book = $this->bookService->store($request->validated());
 
-        return Helper::successResponse('Book created successfully!', BookResource::make($author), 201);
+        return Helper::successResponse('Book created successfully!', BookResource::make($book), 201);
     }
 
     public function update($id, UpdateBookRequest $request): JsonResponse
     {
-        $author = $this->bookService->update($id, $request->validated());
+        $book = $this->bookService->update($id, $request->validated());
 
-        return Helper::successResponse('Book updated successfully!', BookResource::make($author), 200);
+        return Helper::successResponse('Book updated successfully!', BookResource::make($book), 200);
     }
 
 
     public function softDelete($id): JsonResponse
     {
-        $author = $this->bookService->softDelete($id);
+        $book = $this->bookService->softDelete($id);
 
-        return Helper::successResponse('Book deleted successfully!', BookResource::make($author), 200);
+        return Helper::successResponse('Book deleted successfully!', BookResource::make($book), 200);
     }
 
     public function forceDelete($id): JsonResponse
     {
-        $author = $this->bookService->forceDelete($id);
+        $book = $this->bookService->forceDelete($id);
 
-        return Helper::successResponse('Book permanently deleted successfully!', BookResource::make($author), 200);
+        return Helper::successResponse('Book permanently deleted successfully!', BookResource::make($book), 200);
     }
 
     public function orderUp($id): JsonResponse
     {
         try {
-            $author = $this->sortOrderService->orderUp($id, new Book());
+            $book = $this->sortOrderService->orderUp($id, new Book());
 
-            return Helper::successResponse('Book successfully moved up!', BookResource::make($author), 200);
+            return Helper::successResponse('Book successfully moved up!', BookResource::make($book), 200);
         } catch (\Exception $e) {
             return Helper::failResponse($e->getMessage(), 400);
         }
@@ -79,9 +79,9 @@ class BookController extends Controller
     public function orderDown($id): JsonResponse
     {
         try {
-            $author = $this->sortOrderService->orderDown($id, new Book());
+            $book = $this->sortOrderService->orderDown($id, new Book());
 
-            return Helper::successResponse('Book successfully moved down!', BookResource::make($author), 200);
+            return Helper::successResponse('Book successfully moved down!', BookResource::make($book), 200);
         } catch (\Exception $e) {
             return Helper::failResponse($e->getMessage(), 400);
         }

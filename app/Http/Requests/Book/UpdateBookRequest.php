@@ -29,7 +29,9 @@ class UpdateBookRequest extends FormRequest
             'about' => 'required|array',
             'about.*' => 'string|max:500',
             'image' => 'required|file|mimes:png,jpg,jpeg,svg|max:5070',
-            'category_id' => 'required|exists:categories,id'
+            'category_id' => 'required|exists:categories,id',
+            'author_ids' => 'required|array',
+            'author_ids.*' => 'exists:authors,id'
         ];
     }
 }

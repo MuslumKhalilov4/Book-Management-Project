@@ -15,24 +15,6 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        $categories = [
-            ['az' => 'Komediya', 'en' => 'Comedy', 'ru' => 'Комедия'],
-            ['az' => 'Fantastika', 'en' => 'Fantasy', 'ru' => 'Фэнтези'],
-            ['az' => 'Dram', 'en' => 'Drama', 'ru' => 'Драма'],
-            ['az' => 'Qorxu', 'en' => 'Horror', 'ru' => 'Ужасы'],
-            ['az' => 'Romantika', 'en' => 'Romance', 'ru' => 'Романтика'],
-        ];
-
-
-        $order = 1;
-
-        foreach ($categories as $category) {
-            Category::firstOrCreate([
-                'name' => $category,
-                'order' => $order
-            ]);
-
-            $order++;
-        }
+        Category::factory()->count(5)->create();
     }
 }

@@ -21,7 +21,8 @@ class BookResource extends JsonResource
             'rating' => $this->rating,
             'category' => $this->category->name,
             'order' => $this->order,
-            'image' => $this->image
+            'image' => $this->image,
+            'authors' => AuthorResource::collection($this->authors)
         ];
     }
 }

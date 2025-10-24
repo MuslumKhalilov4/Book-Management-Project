@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Author;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,26 +18,23 @@ class BookFactory extends Factory
      */
     public function definition()
     {
-        $books = [
-            "To Kill a Mockingbird",
-            "1984",
-            "The Great Gatsby",
-            "Pride and Prejudice",
-            "The Catcher in the Rye",
-            "The Lord of the Rings",
-            "Harry Potter and the Sorcerer's Stone",
-            "The Hobbit",
-            "Brave New World",
-            "Moby-Dick"
-        ];
-
+        
         return [
-            'name' => $this->faker->unique()->randomElement($books),
+            'name' => $this->faker->unique()->sentence(3),
             'about' => $this->faker->text(500),
             'image' => 'image',
             'rating' => $this->faker->numberBetween(1, 5),
-            'category_id' => $this->faker->numberBetween(1, 5),
-            'order' => $this->faker->unique()->numberBetween(1, 10)
+            'category_id' => Category::inRandomOrder()->first()->id,
+            'order' => $this->faker->numberBetween(1, 10)
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function($book){
+            $authors_ids = Author::inRandomOrder()->pluck('id')->take(2)->toArray();
+
+            $book->authors()->attach($authors_ids);
+        });
     }
 }

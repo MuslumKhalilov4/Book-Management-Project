@@ -15,13 +15,19 @@ class SetApiLocaleMiddleware
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function handle(Request $request, Closure $next)
-    {
-        $locale = $request->header('Accept-Language')
-            ?? $request->query('lang')
-            ?? config('app.locale');
+{
+    $locale = $request->query('lang');
 
-        app()->setLocale($locale);
-
-        return $next($request);
+    if (! $locale && $request->hasHeader('Accept-Language')) {
+        $locale = $request->getPreferredLanguage(); 
     }
+
+    $locale = $locale ?? config('app.locale');
+
+    if ($locale) {
+        app()->setLocale($locale);
+    }
+
+    return $next($request);
+}
 }
