@@ -18,14 +18,15 @@ class BookFactory extends Factory
      */
     public function definition()
     {
-        
+        static $order = 1;
+
         return [
             'name' => $this->faker->unique()->sentence(3),
             'about' => $this->faker->text(500),
             'image' => 'image',
             'rating' => $this->faker->numberBetween(1, 5),
             'category_id' => Category::inRandomOrder()->first()->id,
-            'order' => $this->faker->unique()->numberBetween(1, 100)
+            'order' => $order++
         ];
     }
 

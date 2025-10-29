@@ -118,4 +118,49 @@ class BookApiTest extends TestCase
 
         $this->assertDatabaseMissing('books', ['id' => $test_book->id]);
     }
+
+    public function test_book_order_down_then_order_up_successfully()
+    {
+        Category::factory()->create();
+        Role::factory()->count(3)->create();
+        $user = User::factory()->create();
+        Book::factory()->count(2)->create();
+
+        $test_book = Book::orderBy('order')->first();
+        $old_order = $test_book->order;
+        $response = $this->actingAs($user, 'sanctum')->getJson("/api/book/order-down/{$test_book->id}");
+        $response->assertStatus(200);
+        $test_book->refresh();
+        $this->assertEquals($old_order + 1, $test_book->order);
+
+        $old_order2 = $test_book->order;
+        $response2 = $this->actingAs($user, 'sanctum')->getJson("api/book/order-up/{$test_book->id}");
+        $response2->assertStatus(200);
+        $test_book->refresh();
+        $this->assertEquals($old_order2 - 1, $test_book->order);
+    }
+
+    public function test_error_if_already_on_bottom(){
+        Category::factory()->create();
+        Role::factory()->count(3)->create();
+        $user = User::factory()->create();
+        Book::factory()->count(2)->create();
+
+        $test_book = Book::orderBy('order', 'desc')->first();
+
+        $response = $this->actingAs($user, 'sanctum')->getJson("api/book/order-down/{$test_book->id}");
+
+        $response->assertStatus(400)->assertJsonFragment([
+            'message' => class_basename($test_book) . " is already at the bottom position"
+        ]);
+    }
+
+    public function test_error_id_user_is_not_authenticated(){
+        Category::factory()->create();
+        Book::factory()->count(2)->create();
+
+        $response = $this->getJson('api/book');
+
+        $response->assertStatus(401);
+    }
 }
