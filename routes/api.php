@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AuthorController;
@@ -27,7 +28,7 @@ Route::prefix('author')->group(function () {
     Route::get('/order-down/{id}', [AuthorController::class, 'orderDown']);
 });
 
-Route::prefix('book')->group(function () {
+Route::prefix('book')->middleware('auth:sanctum')->group(function () {
     Route::get('/', [BookController::class, 'index']);
     Route::get('/{id}', [BookController::class, 'show']);
     Route::post('/store', [BookController::class, 'store']);
@@ -37,3 +38,9 @@ Route::prefix('book')->group(function () {
     Route::get('/order-up/{id}', [BookController::class, 'orderUp']);
     Route::get('/order-down/{id}', [BookController::class, 'orderDown']);
 });
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+

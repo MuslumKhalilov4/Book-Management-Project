@@ -5,14 +5,24 @@ namespace Tests\Feature;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Category;
+use App\Models\Role;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class BookApiTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_books_retrieved_successfully()
     {
-        $response = $this->getJson('/api/book');
+        Category::factory()->create();
+        Book::factory()->count(2)->create();
+        Role::factory()->count(3)->create();
+        $user = User::factory()->create();
+        
+        $response = $this->actingAs($user, 'sanctum')->getJson('/api/book');
 
         $response->assertStatus(200);
 
@@ -47,6 +57,8 @@ class BookApiTest extends TestCase
     {
         $authors = Author::factory()->count(2)->create()->pluck('id')->toArray();
         $category = Category::factory()->create();
+        Role::factory()->count(3)->create();
+        $user = User::factory()->create();
 
         $test_book = [
             'name' => ['en' => 'Created during test'],
@@ -58,7 +70,7 @@ class BookApiTest extends TestCase
             'image' => UploadedFile::fake()->image('book.jpg')
         ];
 
-        $response = $this->postJson('/api/book/store', $test_book);
+        $response = $this->actingAs($user, 'sanctum')->postJson('/api/book/store', $test_book);
 
         $response->assertStatus(201)->assertJsonFragment(['name' => 'Created during test']);
 
@@ -72,6 +84,8 @@ class BookApiTest extends TestCase
     {
         $authors = Author::factory()->count(2)->create()->pluck('id')->toArray();
         $category = Category::factory()->create();
+        Role::factory()->count(3)->create();
+        $user = User::factory()->create();
 
         $test_book = Book::factory()->create();
 
@@ -85,15 +99,20 @@ class BookApiTest extends TestCase
             'author_ids' => $authors
         ];
 
-        $response = $this->putJson('/api/book/update/' . $test_book->id, $update_data);
+        $response = $this->actingAs($user, 'sanctum')->putJson('/api/book/update/' . $test_book->id, $update_data);
 
         $response->assertStatus(200)->assertJsonFragment(['name' => 'Updated during test']);
     }
 
-    public function test_book_deleted_successfully(){
+    public function test_book_deleted_successfully()
+    {
+        Category::factory()->create();
+        Role::factory()->count(3)->create();
+        $user = User::factory()->create();
+
         $test_book = Book::factory()->create();
 
-        $response = $this->deleteJson("/api/book/destroy/{$test_book->id}/force");
+        $response = $this->actingAs($user, 'sanctum')->deleteJson("/api/book/destroy/{$test_book->id}/force");
 
         $response->assertStatus(200);
 

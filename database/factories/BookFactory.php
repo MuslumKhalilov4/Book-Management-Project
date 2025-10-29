@@ -25,7 +25,7 @@ class BookFactory extends Factory
             'image' => 'image',
             'rating' => $this->faker->numberBetween(1, 5),
             'category_id' => Category::inRandomOrder()->first()->id,
-            'order' => $this->faker->numberBetween(1, 10)
+            'order' => $this->faker->unique()->numberBetween(1, 100)
         ];
     }
 

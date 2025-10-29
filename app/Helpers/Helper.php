@@ -11,13 +11,19 @@ use Illuminate\Support\Str;
 class Helper
 {
 
-    public static function successResponse(string $message, $resource, $code): JsonResponse
+    public static function successResponse(string $message, $resource, $code, $token = null): JsonResponse
     {
-        return response()->json([
+        $response = [
             'success' => true,
             'message' => $message,
             'data' => $resource
-        ], $code);
+        ];
+
+        if ($token) {
+            $response['token'] = $token;
+        }
+
+        return response()->json($response, $code);
     }
 
     public static function failResponse(string $message, $code): JsonResponse
