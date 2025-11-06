@@ -2,8 +2,12 @@
 
 namespace App\Exceptions;
 
+use App\Helpers\Helper;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -51,15 +55,47 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof ModelNotFoundException) {
-            $model = class_basename($exception->getModel());
+        $status_code = 500;
+        $error_message = 'Internal server error';
 
-            return response()->json([
-                'success' => false,
-                'message' => "$model not found"
-            ], 404);
+        switch (true) {
+            case ($exception instanceof ModelNotFoundException || $exception instanceof NotFoundHttpException):
+                $status_code = 404;
+                $error_message = 'Resource not found';
+                break;
+
+            case $exception instanceof AuthenticationException:
+                $status_code = 401;
+                $error_message = 'Unauthenticated';
+                break;
+
+            case $exception instanceof ValidationException:
+                return response()->json([
+                    'success' => 'false',
+                    'message' => 'Validation failed',
+                    'errors' => $exception->errors()
+                ], 422);
+
+            case $exception instanceof OrderUpException:
+                $status_code = 409;
+                $error_message = $exception->getMessage();
+                break;
+
+            case $exception instanceof OrderDownException:
+                $status_code = 409;
+                $error_message = $exception->getMessage();
+                break;
+
+            case $exception instanceof InvalidCredentialsException:
+                $status_code = 401;
+                $error_message = $exception->getMessage();
+
+            default:
+                $status_code = 500;
+                $error_message = 'Internal server error';
+                break;
         }
 
-        return parent::render($request, $exception);
+        return Helper::failResponse($error_message, $status_code);
     }
 }

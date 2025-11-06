@@ -21,7 +21,7 @@ class CategoryService implements CategoryServiceInterface
             $categories = Category::get();
 
             if ($categories->isEmpty()) {
-                throw new NotFoundHttpException('No categories found');
+                throw new NotFoundHttpException();
             }
 
             return $categories;

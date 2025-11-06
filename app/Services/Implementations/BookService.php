@@ -17,7 +17,7 @@ class BookService implements BookServiceInterface
             $books = Book::with('authors')->get();
 
             if ($books->isEmpty()) {
-                throw new NotFoundHttpException('No books found');
+                throw new NotFoundHttpException();
             }
 
             return $books;

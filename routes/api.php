@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\UserController;
 
 Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     Route::prefix('category')->group(function () {
@@ -18,16 +19,7 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
         Route::get('/order-down/{id}', [CategoryController::class, 'orderDown']);
     });
 
-    Route::prefix('author')->group(function () {
-        Route::get('/', [AuthorController::class, 'index']);
-        Route::get('/{id}', [AuthorController::class, 'show']);
-        Route::post('/store', [AuthorController::class, 'store']);
-        Route::put('/update/{id}', [AuthorController::class, 'update']);
-        Route::delete('/destroy/{id}', [AuthorController::class, 'softDelete']);
-        Route::delete('/destroy/{id}/force', [AuthorController::class, 'forceDelete']);
-        Route::get('/order-up/{id}', [AuthorController::class, 'orderUp']);
-        Route::get('/order-down/{id}', [AuthorController::class, 'orderDown']);
-    });
+    
 
     Route::prefix('book')->group(function () {
         Route::get('/', [BookController::class, 'index']);
@@ -41,6 +33,23 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
     });
 });
 
+Route::prefix('user')->group(function () {
+    Route::middleware('isSuperAdmin')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+    });
+});
+
 Route::post('/register', [AuthController::class, 'register'])->middleware('alreadyLoggedIn');
 Route::post('/login', [AuthController::class, 'login'])->middleware('alreadyLoggedIn');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+Route::prefix('author')->group(function () {
+        Route::get('/', [AuthorController::class, 'index']);
+        Route::get('/{id}', [AuthorController::class, 'show']);
+        Route::post('/store', [AuthorController::class, 'store']);
+        Route::put('/update/{id}', [AuthorController::class, 'update']);
+        Route::delete('/destroy/{id}', [AuthorController::class, 'softDelete']);
+        Route::delete('/destroy/{id}/force', [AuthorController::class, 'forceDelete']);
+        Route::get('/order-up/{id}', [AuthorController::class, 'orderUp']);
+        Route::get('/order-down/{id}', [AuthorController::class, 'orderDown']);
+    });

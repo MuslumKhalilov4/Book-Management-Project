@@ -2,6 +2,7 @@
 
 namespace App\Services\Implementations;
 
+use App\Exceptions\InvalidCredentialsException;
 use App\Helpers\Helper;
 use App\Models\Role;
 use App\Models\User;
@@ -53,7 +54,7 @@ class AuthService implements AuthServiceInterface
             $user = User::where('email', $request['email'])->first();
 
             if (!$user || !Hash::check($request['password'], $user->password)) {
-                throw new Exception('Email or password is incorrect!');
+                throw new InvalidCredentialsException();
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;

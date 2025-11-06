@@ -5,6 +5,7 @@ namespace App\Services\Implementations;
 use App\Helpers\Helper;
 use App\Models\Author;
 use App\Services\Interfaces\AuthorServiceInterface;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -17,7 +18,7 @@ class AuthorService implements AuthorServiceInterface
             $authors = Author::get();
 
             if ($authors->isEmpty()) {
-                throw new NotFoundHttpException('No authors found');
+                throw new NotFoundHttpException();
             }
 
             return $authors;
@@ -30,15 +31,9 @@ class AuthorService implements AuthorServiceInterface
 
     public function getSingleAuthor($id): Author
     {
-        try {
-            $author = Author::findOrFail($id);
+        $author = Author::findOrFail($id);
 
-            return $author;
-        } catch (\Throwable $e) {
-            Helper::logException($e);
-
-            throw $e;
-        }
+        return $author;
     }
 
     public function store($request): Author
@@ -109,19 +104,13 @@ class AuthorService implements AuthorServiceInterface
 
     public function softDelete($id): Author
     {
-        DB::beginTransaction();
-
         try {
             $author = Author::findOrFail($id);
 
             $author->delete();
 
-            DB::commit();
-
             return $author;
         } catch (\Throwable $e) {
-            DB::rollBack();
-
             Helper::logException($e);
 
             throw $e;
@@ -130,26 +119,20 @@ class AuthorService implements AuthorServiceInterface
 
     public function forceDelete($id): Author
     {
-        DB::beginTransaction();
-
         try {
             $author = Author::findOrFail($id);
 
-            if($author->image){
+            if ($author->image) {
                 Helper::deleteFile($author->image);
             }
 
             $author->forceDelete();
 
-            DB::commit();
-
             return $author;
         } catch (\Throwable $e) {
-            DB::rollBack();
-
             Helper::logException($e);
 
             throw $e;
         }
-    } 
+    }
 }
