@@ -19,7 +19,16 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
         Route::get('/order-down/{id}', [CategoryController::class, 'orderDown']);
     });
 
-    
+    Route::prefix('author')->group(function () {
+        Route::get('/', [AuthorController::class, 'index']);
+        Route::get('/{id}', [AuthorController::class, 'show']);
+        Route::post('/store', [AuthorController::class, 'store']);
+        Route::put('/update/{id}', [AuthorController::class, 'update']);
+        Route::delete('/destroy/{id}', [AuthorController::class, 'softDelete']);
+        Route::delete('/destroy/{id}/force', [AuthorController::class, 'forceDelete']);
+        Route::get('/order-up/{id}', [AuthorController::class, 'orderUp']);
+        Route::get('/order-down/{id}', [AuthorController::class, 'orderDown']);
+    });
 
     Route::prefix('book')->group(function () {
         Route::get('/', [BookController::class, 'index']);
@@ -34,22 +43,19 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
 });
 
 Route::prefix('user')->group(function () {
-    Route::middleware('isSuperAdmin')->group(function () {
+    Route::middleware(['auth:sanctum', 'isSuperAdmin'])->group(function () {
         Route::get('/', [UserController::class, 'index']);
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::post('/{id}/make-admin', [UserController::class, 'makeAdmin']);
+        Route::post('/{id}/remove-admin', [UserController::class, 'removeAdmin']);
     });
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/my-profile', [UserController::class, 'myProfile']);
+    Route::patch('/my-profile/update', [UserController::class, 'updateProfile']);
 });
 
 Route::post('/register', [AuthController::class, 'register'])->middleware('alreadyLoggedIn');
 Route::post('/login', [AuthController::class, 'login'])->middleware('alreadyLoggedIn');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-
-Route::prefix('author')->group(function () {
-        Route::get('/', [AuthorController::class, 'index']);
-        Route::get('/{id}', [AuthorController::class, 'show']);
-        Route::post('/store', [AuthorController::class, 'store']);
-        Route::put('/update/{id}', [AuthorController::class, 'update']);
-        Route::delete('/destroy/{id}', [AuthorController::class, 'softDelete']);
-        Route::delete('/destroy/{id}/force', [AuthorController::class, 'forceDelete']);
-        Route::get('/order-up/{id}', [AuthorController::class, 'orderUp']);
-        Route::get('/order-down/{id}', [AuthorController::class, 'orderDown']);
-    });

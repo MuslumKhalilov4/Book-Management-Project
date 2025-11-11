@@ -4,12 +4,10 @@ namespace App\Exceptions;
 
 use Exception;
 
-class OrderUpException extends Exception
+class OrderUpException extends BaseException
 {
-    protected $message;
-
     public function __construct($modelName)
     {
-        $this->message = $modelName . ' is already at the top position';
+        parent::__construct($modelName . ' is already at the top position', 409);
     }
 }

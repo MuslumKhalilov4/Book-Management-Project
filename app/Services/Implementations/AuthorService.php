@@ -14,19 +14,9 @@ class AuthorService implements AuthorServiceInterface
 {
     public function getAllAuthors(): Collection
     {
-        try {
-            $authors = Author::get();
+        $authors = Author::get();
 
-            if ($authors->isEmpty()) {
-                throw new NotFoundHttpException();
-            }
-
-            return $authors;
-        } catch (\Throwable $e) {
-            Helper::logException($e);
-
-            throw $e;
-        }
+        return $authors;
     }
 
     public function getSingleAuthor($id): Author
@@ -43,11 +33,7 @@ class AuthorService implements AuthorServiceInterface
         try {
             $maxOrder = Author::max('order') + 1;
 
-            $image_path = '';
-
-            if ($request['image']) {
-                $image_path = Helper::uploadImage($request['image'], 'Author');
-            }
+            $image_path = isset($request['image']) ? Helper::uploadImage($request['image'], 'Author') : null;
 
             $author = Author::create([
                 'full_name' => $request['full_name'],
@@ -104,35 +90,23 @@ class AuthorService implements AuthorServiceInterface
 
     public function softDelete($id): Author
     {
-        try {
-            $author = Author::findOrFail($id);
+        $author = Author::findOrFail($id);
 
-            $author->delete();
+        $author->delete();
 
-            return $author;
-        } catch (\Throwable $e) {
-            Helper::logException($e);
-
-            throw $e;
-        }
+        return $author;
     }
 
     public function forceDelete($id): Author
     {
-        try {
-            $author = Author::findOrFail($id);
+        $author = Author::findOrFail($id);
 
-            if ($author->image) {
-                Helper::deleteFile($author->image);
-            }
-
-            $author->forceDelete();
-
-            return $author;
-        } catch (\Throwable $e) {
-            Helper::logException($e);
-
-            throw $e;
+        if ($author->image) {
+            Helper::deleteFile($author->image);
         }
+
+        $author->forceDelete();
+
+        return $author;
     }
 }

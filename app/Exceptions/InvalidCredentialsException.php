@@ -4,7 +4,10 @@ namespace App\Exceptions;
 
 use Exception;
 
-class InvalidCredentialsException extends Exception
+class InvalidCredentialsException extends BaseException
 {
-    protected $message = 'Email or password is incorrect!';
+    public function __construct()
+    {
+        parent::__construct('Email or password is incorrect!', 401);
+    }
 }

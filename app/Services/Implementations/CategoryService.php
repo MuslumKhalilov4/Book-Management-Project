@@ -17,32 +17,16 @@ class CategoryService implements CategoryServiceInterface
 
     public function getAllCategories(): Collection
     {
-        try {
-            $categories = Category::get();
+        $categories = Category::get();
 
-            if ($categories->isEmpty()) {
-                throw new NotFoundHttpException();
-            }
-
-            return $categories;
-        } catch (\Throwable $e) {
-            Helper::logException($e);
-
-            throw $e;
-        }
+        return $categories;
     }
 
     public function getSingleCategory($id): Category
     {
-        try {
-            $category = Category::findOrFail($id);
+        $category = Category::findOrFail($id);
 
-            return $category;
-        } catch (\Throwable $e) {
-            Helper::logException($e);
-
-            throw $e;
-        }
+        return $category;
     }
 
     public function store($request): Category
@@ -94,43 +78,19 @@ class CategoryService implements CategoryServiceInterface
 
     public function softDelete($id): Category
     {
-        DB::beginTransaction();
+        $category = Category::findOrFail($id);
 
-        try {
-            $category = Category::findOrFail($id);
+        $category->delete();
 
-            $category->delete();
-
-            DB::commit();
-
-            return $category;
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            Helper::logException($e);
-
-            throw $e;
-        }
+        return $category;
     }
 
     public function forceDelete($id): Category
     {
-        DB::beginTransaction();
+        $category = Category::findOrFail($id);
 
-        try {
-            $category = Category::findOrFail($id);
+        $category->forceDelete();
 
-            $category->forceDelete();
-
-            DB::commit();
-
-            return $category;
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            Helper::logException($e);
-
-            throw $e;
-        }
+        return $category;
     }
 }

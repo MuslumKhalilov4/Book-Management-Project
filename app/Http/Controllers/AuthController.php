@@ -29,16 +29,9 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        try {
-            $result = $this->authService->login($request->validated());
+        $result = $this->authService->login($request->validated());
 
-            return Helper::successResponse('Logged in successfully', UserResource::make($result['user']), 200, $result['token']);
-        } catch (\Exception $e) {
-            Helper::logException($e);
-
-            return Helper::failResponse($e->getMessage(), 401);
-        }
-
+        return Helper::successResponse('Logged in successfully', UserResource::make($result['user']), 200, $result['token']);
     }
 
     public function logout(Request $request): JsonResponse

@@ -7,11 +7,13 @@ use App\Services\Implementations\AuthService;
 use App\Services\Implementations\BookService;
 use App\Services\Implementations\CategoryService;
 use App\Services\Implementations\SortOrderService;
+use App\Services\Implementations\UserService;
 use App\Services\Interfaces\AuthorServiceInterface;
 use App\Services\Interfaces\AuthServiceInterface;
 use App\Services\Interfaces\BookServiceInterface;
 use App\Services\Interfaces\CategoryServiceInterface;
 use App\Services\Interfaces\SortOrderServiceInterface;
+use App\Services\Interfaces\UserServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SortOrderServiceInterface::class, SortOrderService::class);
         $this->app->bind(BookServiceInterface::class, BookService::class);
         $this->app->bind(AuthServiceInterface::class, AuthService::class);
+        $this->app->bind(UserServiceInterface::class, UserService::class);
     }
 
     /**

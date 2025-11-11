@@ -76,19 +76,10 @@ class Handler extends ExceptionHandler
                     'errors' => $exception->errors()
                 ], 422);
 
-            case $exception instanceof OrderUpException:
-                $status_code = 409;
+            case $exception instanceof BaseException:
+                $status_code = $exception->getStatusCode();
                 $error_message = $exception->getMessage();
                 break;
-
-            case $exception instanceof OrderDownException:
-                $status_code = 409;
-                $error_message = $exception->getMessage();
-                break;
-
-            case $exception instanceof InvalidCredentialsException:
-                $status_code = 401;
-                $error_message = $exception->getMessage();
 
             default:
                 $status_code = 500;

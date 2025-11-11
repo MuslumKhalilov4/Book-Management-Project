@@ -13,32 +13,16 @@ class BookService implements BookServiceInterface
 {
     public function getAllBooks(): Collection
     {
-        try {
-            $books = Book::with('authors')->get();
+        $books = Book::with('authors')->get();
 
-            if ($books->isEmpty()) {
-                throw new NotFoundHttpException();
-            }
-
-            return $books;
-        } catch (\Throwable $e) {
-            Helper::logException($e);
-
-            throw $e;
-        }
+        return $books;
     }
 
     public function getSingleBook($id): Book
     {
-        try {
-            $books = Book::findOrFail($id);
+        $book = Book::with('authors')->findOrFail($id);
 
-            return $books;
-        } catch (\Throwable $e) {
-            Helper::logException($e);
-
-            throw $e;
-        }
+        return $book;
     }
 
     public function store($request): Book
@@ -48,11 +32,7 @@ class BookService implements BookServiceInterface
         try {
             $maxOrder = Book::max('order') + 1;
 
-            $image_path = '';
-
-            if ($request['image']) {
-                $image_path = Helper::uploadImage($request['image'], 'Book');
-            }
+            $image_path = isset($request['image']) ? Helper::uploadImage($request['image'], 'Book') : null;
 
             $book = Book::create([
                 'name' => $request['name'],
@@ -120,47 +100,23 @@ class BookService implements BookServiceInterface
 
     public function softDelete($id): Book
     {
-        DB::beginTransaction();
+        $book = Book::findOrFail($id);
 
-        try {
-            $book = Book::findOrFail($id);
+        $book->delete();
 
-            $book->delete();
-
-            DB::commit();
-
-            return $book;
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            Helper::logException($e);
-
-            throw $e;
-        }
+        return $book;
     }
 
     public function forceDelete($id): Book
     {
-        DB::beginTransaction();
+        $book = Book::findOrFail($id);
 
-        try {
-            $book = Book::findOrFail($id);
-
-            if ($book->image) {
-                Helper::deleteFile($book->image);
-            }
-
-            $book->forceDelete();
-
-            DB::commit();
-
-            return $book;
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            Helper::logException($e);
-
-            throw $e;
+        if ($book->image) {
+            Helper::deleteFile($book->image);
         }
+
+        $book->forceDelete();
+
+        return $book;
     }
 }

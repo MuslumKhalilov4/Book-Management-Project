@@ -4,12 +4,10 @@ namespace App\Exceptions;
 
 use Exception;
 
-class OrderDownException extends Exception
+class OrderDownException extends BaseException
 {
-    protected $message;
-
     public function __construct($modelName)
-    {
-        $this->message = $modelName . ' is already at the bottom position';
+    { 
+        parent::__construct($modelName . ' is already at the bottom position', 409);
     }
 }
