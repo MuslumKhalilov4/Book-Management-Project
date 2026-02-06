@@ -24,7 +24,7 @@ class BookFactory extends Factory
             'name' => $this->faker->unique()->sentence(3),
             'about' => $this->faker->text(500),
             'image' => 'image',
-            'rating' => $this->faker->numberBetween(1, 5),
+            'rating' => null,
             'category_id' => Category::inRandomOrder()->first()->id,
             'order' => $order++
         ];

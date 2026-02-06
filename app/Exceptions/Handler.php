@@ -58,6 +58,10 @@ class Handler extends ExceptionHandler
         $status_code = 500;
         $error_message = 'Internal server error';
 
+        if (!$exception instanceof ValidationException) {
+            Helper::logException($exception);
+        }
+
         switch (true) {
             case ($exception instanceof ModelNotFoundException || $exception instanceof NotFoundHttpException):
                 $status_code = 404;
@@ -80,6 +84,7 @@ class Handler extends ExceptionHandler
                 $status_code = $exception->getStatusCode();
                 $error_message = $exception->getMessage();
                 break;
+                
 
             default:
                 $status_code = 500;

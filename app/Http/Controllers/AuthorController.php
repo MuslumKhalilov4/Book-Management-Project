@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\Helper;
 use App\Http\Requests\Author\StoreAuthorRequest;
 use App\Http\Requests\Author\UpdateAuthorRequest;
 use App\Http\Resources\AuthorResource;
@@ -26,28 +25,28 @@ class AuthorController extends Controller
     {
         $authors = $this->authorService->getAllAuthors();
 
-        return Helper::successResponse('Authors retrieved successfully!', AuthorResource::collection($authors), 200);
+        return $this->successResponse('Authors retrieved successfully!', AuthorResource::collection($authors), 200);
     }
 
     public function show($id): JsonResponse
     {
         $author = $this->authorService->getSingleAuthor($id);
 
-        return Helper::successResponse('Author retrieved successfully!', AuthorResource::make($author), 200);
+        return $this->successResponse('Author retrieved successfully!', AuthorResource::make($author), 200);
     }
 
     public function store(StoreAuthorRequest $request): JsonResponse
     {
         $author = $this->authorService->store($request->validated());
 
-        return Helper::successResponse('Author created successfully!', AuthorResource::make($author), 201);
+        return $this->successResponse('Author created successfully!', AuthorResource::make($author), 201);
     }
 
     public function update($id, UpdateAuthorRequest $request): JsonResponse
     {
         $author = $this->authorService->update($id, $request->validated());
 
-        return Helper::successResponse('Author updated successfully!', AuthorResource::make($author), 200);
+        return $this->successResponse('Author updated successfully!', AuthorResource::make($author), 200);
     }
 
 
@@ -55,14 +54,14 @@ class AuthorController extends Controller
     {
         $author = $this->authorService->softDelete($id);
 
-        return Helper::successResponse('Author deleted successfully!', AuthorResource::make($author), 200);
+        return $this->successResponse('Author deleted successfully!', AuthorResource::make($author), 200);
     }
 
     public function forceDelete($id): JsonResponse
     {
         $author = $this->authorService->forceDelete($id);
 
-        return Helper::successResponse('Author permanently deleted successfully!', AuthorResource::make($author), 200);
+        return $this->successResponse('Author permanently deleted successfully!', AuthorResource::make($author), 200);
     }
 
     public function orderUp($id): JsonResponse
@@ -70,9 +69,9 @@ class AuthorController extends Controller
         try {
             $author = $this->sortOrderService->orderUp($id, new Author());
 
-            return Helper::successResponse('Author successfully moved up!', AuthorResource::make($author), 200);
+            return $this->successResponse('Author successfully moved up!', AuthorResource::make($author), 200);
         } catch (\Exception $e) {
-            return Helper::failResponse($e->getMessage(), 400);
+            return $this->failResponse($e->getMessage(), 400);
         }
     }
 
@@ -81,9 +80,9 @@ class AuthorController extends Controller
         try {
             $author = $this->sortOrderService->orderDown($id, new Author());
 
-            return Helper::successResponse('Author successfully moved down!', AuthorResource::make($author), 200);
+            return $this->successResponse('Author successfully moved down!', AuthorResource::make($author), 200);
         } catch (\Exception $e) {
-            return Helper::failResponse($e->getMessage(), 400);
+            return $this->failResponse($e->getMessage(), 400);
         }
     }
 }

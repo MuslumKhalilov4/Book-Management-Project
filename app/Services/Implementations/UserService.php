@@ -2,11 +2,13 @@
 
 namespace App\Services\Implementations;
 
+use App\Exceptions\CurrentPasswordCheckException;
 use App\Exceptions\UserAlreadyAdminException;
 use App\Exceptions\UserAlreadyUserException;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\Interfaces\UserServiceInterface;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class UserService implements UserServiceInterface
@@ -70,6 +72,20 @@ class UserService implements UserServiceInterface
         $user = auth()->user();
 
         $user->update($request);
+
+        return $user->fresh();
+    }
+
+    public function resetPassword(array $request): User
+    {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        if (!isset($request['password']) || !Hash::check($request['password'], $user->password) ){
+            throw new CurrentPasswordCheckException();
+        }
+
+        $user->update(['password' => Hash::make($request['new_password'])]);
 
         return $user->fresh();
     }

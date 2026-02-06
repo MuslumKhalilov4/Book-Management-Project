@@ -18,4 +18,6 @@ interface UserServiceInterface
     public function myProfile(): User;
 
     public function updateMyProfile(array $request):User;
+
+    public function resetPassword(array $request): User;
 }

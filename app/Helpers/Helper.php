@@ -10,30 +10,6 @@ use Illuminate\Support\Str;
 
 class Helper
 {
-
-    public static function successResponse(string $message, $resource, $code, $token = null): JsonResponse
-    {
-        $response = [
-            'success' => true,
-            'message' => $message,
-            'data' => $resource
-        ];
-
-        if ($token) {
-            $response['token'] = $token;
-        }
-
-        return response()->json($response, $code);
-    }
-
-    public static function failResponse(string $message, $code): JsonResponse
-    {
-        return response()->json([
-            'success' => false,
-            'message' => $message
-        ], $code);
-    }
-
     public static function logException(\Throwable $e): void
     {
         Log::error([

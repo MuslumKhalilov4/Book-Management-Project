@@ -10,9 +10,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class CategoryService implements CategoryServiceInterface
+class CategoryService 
 {
-
     protected $categoryRepository;
 
     public function getAllCategories(): Collection
@@ -27,30 +26,6 @@ class CategoryService implements CategoryServiceInterface
         $category = Category::findOrFail($id);
 
         return $category;
-    }
-
-    public function store($request): Category
-    {
-        DB::beginTransaction();
-
-        try {
-            $maxOrder = Category::max('order') + 1;
-
-            $category = Category::create([
-                'name' => $request['name'],
-                'order' => $maxOrder
-            ]);
-
-            DB::commit();
-
-            return $category;
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
-            Helper::logException($e);
-
-            throw $e;
-        }
     }
 
     public function update($id, $request): Category
@@ -93,4 +68,5 @@ class CategoryService implements CategoryServiceInterface
 
         return $category;
     }
+
 }

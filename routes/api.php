@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\RatingController;
 use App\Http\Controllers\UserController;
 
 Route::middleware(['auth:sanctum', 'isAdmin'])->group(function () {
@@ -54,6 +55,9 @@ Route::prefix('user')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-profile', [UserController::class, 'myProfile']);
     Route::patch('/my-profile/update', [UserController::class, 'updateProfile']);
+    Route::patch('/reset-password', [UserController::class, 'resetPassword']);
+
+    Route::post('/rate', [RatingController::class, 'rate']);
 });
 
 Route::post('/register', [AuthController::class, 'register'])->middleware('alreadyLoggedIn');

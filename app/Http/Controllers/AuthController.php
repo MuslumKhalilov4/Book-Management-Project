@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegistrationRequest;
@@ -24,20 +23,20 @@ class AuthController extends Controller
     {
         $result = $this->authService->register($request->validated());
 
-        return Helper::successResponse('Registration completed successfully', UserResource::make($result['user']), 201, $result['token']);
+        return $this->successResponse('Registration completed successfully', UserResource::make($result['user']), 201, $result['token']);
     }
 
     public function login(LoginRequest $request): JsonResponse
     {
         $result = $this->authService->login($request->validated());
 
-        return Helper::successResponse('Logged in successfully', UserResource::make($result['user']), 200, $result['token']);
+        return $this->successResponse('Logged in successfully', UserResource::make($result['user']), 200, $result['token']);
     }
 
     public function logout(Request $request): JsonResponse
     {
         $result = $this->authService->logout($request);
 
-        return Helper::successResponse('Logged out successfully', UserResource::make($result), 200);
+        return $this->successResponse('Logged out successfully', UserResource::make($result), 200);
     }
 }
